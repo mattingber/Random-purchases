@@ -10,6 +10,7 @@ class UserBuyModel(BaseModel):
     userid: str = Field(...)
     price: int = Field(...)
     timestamp: datetime = Field(default_factory=lambda: datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"))
+    item: str = Field(...)
 
     class Config:
         '''Additional configuration and documentation for the model'''

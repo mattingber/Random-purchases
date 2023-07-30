@@ -72,7 +72,7 @@ function App() {
         <ul>
           {userPurchases.map((purchase) => (
             <li key={purchase.id}>
-              <strong>User </strong> {purchase.username}({purchase.userid}) bought a random item for <strong>${purchase.price}</strong>
+              User <strong>{purchase.username} </strong>({purchase.userid}) randomly bough <strong> {purchase.item} </strong>for <strong>${purchase.price}</strong>, what a bargin!
             </li>
           ))}
         </ul>
