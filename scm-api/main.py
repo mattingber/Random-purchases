@@ -19,8 +19,8 @@ from utils import consume
 
 
 app = FastAPI()
-loop = asyncio.get_event_loop()
 
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

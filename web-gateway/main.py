@@ -12,8 +12,8 @@ from config import settings
 from routers import router as userbuys_router
 
 app = FastAPI()
-loop = asyncio.get_event_loop()
 
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,6 +25,7 @@ app.add_middleware(
 async def startup_db_client():
     '''Initialize Kafka producer on FASTApi startup'''
     try:
+        #Initializing kafka producer connection
         print("INFO:     trying to connect to kafka...")
         app.producer = AIOKafkaProducer(
             bootstrap_servers= settings.KAFKA_URL,
