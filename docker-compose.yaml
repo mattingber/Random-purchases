@@ -1,0 +1,105 @@
+version: "3.3"
+services:
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    networks:
+      - main
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
+
+
+  kafka:
+    image: obsidiandynamics/kafka
+    container_name: kafka
+    networks:
+      - main
+    restart: "no"
+    ports:
+      - "2181:2181"
+      - "9093:9093"
+    environment:
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9093"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    healthcheck:
+      test: nc -z localhost 29092 || exit
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    networks:
+      - main
+    ports:
+        - '27017:27017'
+    restart: always
+    logging:
+        options:
+            max-size: 1g
+
+  scm-api:
+    container_name: scm-api
+    networks:
+      - main
+    build:
+      context: scm-api
+      dockerfile: Dockerfile
+    ports:
+        - '8000:8000'
+    restart: always
+    environment:
+        - DB_USER=mongoadmin
+        - DB_PASSWORD=mysecretpass
+        - DB_URL=mongo:27017
+        - KAFKA_HOST=kafka:29092
+    depends_on:
+      - mongo
+      - kafka
+
+  web:
+    container_name: web-gateway
+    networks:
+      - main
+    build:
+      context: web-gateway
+      dockerfile: Dockerfile
+    ports:
+        - '8100:8100'
+    restart: always
+    environment:
+        - API_URL=http://scm-api:8000
+        - KAFKA_URL=kafka:29092
+    depends_on:
+      - mongo
+      - kafka
+
+  frontend:
+    container_name: frontend
+    networks:
+      - main
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+        - '80:80'
+    restart: always
+    depends_on:
+      - scm-api
+      - web
+      
+networks:
+  main:
+    driver: bridge
