@@ -7,7 +7,7 @@ It is comprised of the following components:
 * Apache **Kafka** and **Zookeeper** (in a single image)
 * A **Kafka UI**
 * **scm-api** (server customer management) written in `python`, utilizing `FASTapi`, `Motor` and `AIOKafka`
-* **web-gateway** written in python, utilizing `FASTApi` and `AIOKafka`
+* **web-gateway** written in `python`, utilizing `FASTApi` and `AIOKafka`
 * **frontend** written in `react`
 
 ## deployment
